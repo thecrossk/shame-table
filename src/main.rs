@@ -1,27 +1,25 @@
 use axum::{
-    response::Html,
-    routing::get,
-    Router,
+    response::{Html, IntoResponse, Response}, routing::{get, post}, Json, Router
+};
+use sqlx::{
+    FromRow,
+    postgres::PgPoolOptions,
+    query,
+    query_as
 };
 
 use std::{
     fs, net::SocketAddr,
 };
 
-use serde::{Deserialize, Serialize};
+use serde_json::{
+    Deserializer,
+    Serializer,
+    Value
+};
 
-use serde_json::Value;
-use sqlx::FromRow;
-use sqlx::postgres::PgPoolOptions;
+use serde::Deserialize;
 
-#[derive(Debug, FromRow)]
-pub struct TableData {
-    pub id: i64,
-    pub data: Value,
-    pub description: String
-}
-
-#[derive(Deserialize)]
 pub struct ShameTableData {
     pub id: i64,
     pub topic: String,
@@ -29,20 +27,11 @@ pub struct ShameTableData {
     pub description: String
 }
 
-#[derive(Serialize)]
-pub struct ResponseMessage {
-    pub message: String
-}
-
-async fn handle_add_entry(Json(payload): Json<ShameTableData>) -> impl IntoResponse {
-    let response = format!(
-            "Received params: {}, {}, {}",
-            payload.topic, payload.url, payload.description
-        );
-
-    Json(ResponseMessage {
-        message: response,
-    })
+#[derive(Deserialize)]
+pub struct JsonDataFromWebUi {
+    pub topic: String,
+    pub url: String,
+    pub description: String
 }
 
 async fn get_start_page() -> Html<String> {
@@ -50,23 +39,43 @@ async fn get_start_page() -> Html<String> {
     Html(html_content)
 }
 
+async fn add_entry(Json(payload): Json<JsonDataFromWebUi>) -> impl IntoResponse {
+    println!("web ui handler hello there");
+    "some literal into response"
+}
+
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     println!("Starting my little rest-api server...");
     let app = Router::new()
         .route("/", get(get_start_page))
-        .route("/add-entry", post(handle_add_entry));
+        .route("/add-entry", post(add_entry));
+        
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("Server running at http://{}", addr);
 
-    let database_url = "postgres://crosskdb:ming@localhost:5432/crossk-db";
+    let database_url = "postgres://crosskdb:ming@192.168.178.56:5432/crossk-db";
 
-    let database = PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(&database_url)
-        .await;
+        .connect(database_url)
+        .await?;
+
+    println!("Connected to database on Pi");
+
+    let rows = sqlx::query(
+        r#"
+            SELECT * FROM shame_table
+        "#
+    )
+    .execute(&pool)
+    .await?;
+
+    println!("Fetched {} rows from table shame_table", rows.rows_affected());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app).await?;
+
+    Ok(())
 }

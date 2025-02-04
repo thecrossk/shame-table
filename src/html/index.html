@@ -1,63 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		    <meta charset="UTF-8">
-		        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-			    <title>Add Entry Form</title>
-			        <style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Entry Form</title>
+    <style>
         body {
-		            font-family: Arial, sans-serif;
-			                margin: 20px;
-					        }
-	        .form-container {
-			            max-width: 400px;
-				                margin: auto;
-						        }
-		        label {
-				            display: block;
-					                margin: 10px 0 5px;
-							        }
-			        input[type="text"] {
-					            width: 100%;
-						                padding: 8px;
-								            box-sizing: border-box;
-									            }
-				        button {
-						            margin-top: 15px;
-							                padding: 10px 20px;
-									            background-color: #4CAF50;
-										                color: white;
-												            border: none;
-													                cursor: pointer;
-															        }
-					        button:hover {
-							            background-color: #45a049;
-								            }
-						    </style>
-	</head>
-	<body>
-		    <div class="form-container">
-			            <label for="topic">Topic:</label>
-				            <input type="text" id="topic" name="topic">
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-					            <label for="url">URL:</label>
-						            <input type="text" id="url" name="url">
+        .form-container {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
 
-							            <label for="description">Description:</label>
-								            <input type="text" id="description" name="description">
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
 
-									            <button onclick="addEntry()">Add</button>
-										        </div>
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #555555;
+            font-weight: bold;
+        }
 
-											    <script>
-												            function addEntry() {
-																											            const topic = document.getElementById('topic').value;
-																											            const url = document.getElementById('url').value;
-																											            const description = document.getElementById('description').value;
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
 
-																											            console.log(`Topic: ${topic}, URL: ${url}, Description: ${description}`);
-																											            alert(`Entry added:\nTopic: ${topic}\nURL: ${url}\nDescription: ${description}`);
-																											        }
-												        </script>
-	</body>
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Add New Entry</h2>
+        <label for="topic">Topic:</label>
+        <input type="text" id="topic" name="topic" placeholder="Enter topic here" required>
+
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" placeholder="Enter URL here" required>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" placeholder="Enter description here" required>
+
+        <button onclick="addEntry()">Add Entry</button>
+    </div>
+
+    <script>
+        function addEntry() {
+            const topic = document.getElementById('topic').value;
+            const url = document.getElementById('url').value;
+            const description = document.getElementById('description').value;
+
+            const data = {
+                topic: topic,
+                url: url,
+                description: description
+            };
+
+            fetch('/add-entry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(result => {
+                console.log('Success:', result);
+                alert('Entry added successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding entry. Please try again.');
+            });
+        }
+    </script>
+</body>
+
 </html>
