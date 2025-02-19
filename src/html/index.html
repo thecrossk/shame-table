@@ -67,17 +67,20 @@
 
 <body>
     <div class="form-container">
-        <h2>Add New Entry</h2>
-        <label for="topic">Topic:</label>
-        <input type="text" id="topic" name="topic" placeholder="Enter topic here" required>
+        <form id="entryForm" onsubmit="event.preventDefault(); addEntry();">
+            <h2>Add New Entry</h2>
+            <label for="topic">Topic:</label>
+            <input type="text" id="topic" name="topic" placeholder="Enter topic here" required>
 
-        <label for="url">URL:</label>
-        <input type="text" id="url" name="url" placeholder="Enter URL here" required>
+            <label for="url">URL:</label>
+            <input type="text" id="url" name="url" placeholder="Enter URL here" required>
 
-        <label for="description">Description:</label>
-        <input type="text" id="description" name="description" placeholder="Enter description here" required>
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" placeholder="Enter description here" required>
 
-        <button onclick="addEntry()">Add Entry</button>
+            <button type="submit">Add Entry</button>
+        </form>
+
     </div>
 
     <script>
@@ -108,11 +111,14 @@
             .then(result => {
                 console.log('Success:', result);
                 alert('Entry added successfully!');
+
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Error adding entry. Please try again.');
             });
+
+            form.reset();
         }
     </script>
 </body>

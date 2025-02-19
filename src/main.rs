@@ -1,16 +1,3 @@
-
-/*
-#[derive(Debug, FromRow)]
-pub struct ShameTableData {
-    pub id: i64,
-    pub topic: String,
-    pub url: String,
-    pub description: String
-}
-
-
-*/
-
 mod database;
 mod router;
 mod data;

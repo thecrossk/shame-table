@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Entries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #cccccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Database Entries</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Topic</th>
+                <th>URL</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody id="entriesTable">
+            <!-- Entries will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchEntries() {
+            try {
+                const response = await fetch('/get-entries');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch entries');
+                }
+                const entries = await response.json();
+                const tableBody = document.getElementById('entriesTable');
+                tableBody.innerHTML = '';
+
+                entries.forEach(entry => {
+                    const row = `<tr>
+                        <td>${entry.id}</td>
+                        <td>${entry.topic}</td>
+                        <td><a href="${entry.url}" target="_blank">${entry.url}</a></td>
+                        <td>${entry.description}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching entries:', error);
+            }
+        }
+
+        window.onload = fetchEntries;
+    </script>
+</body>
+
+</html>
