@@ -1,8 +1,9 @@
 use serde::Deserialize;
+use sqlx::{PgPool, Postgres};
 
 #[derive(Clone)]
 pub struct AppState {
-    pub some_val: i64
+    pub pool: PgPool,
 }
 
 #[derive(Deserialize, Debug)]

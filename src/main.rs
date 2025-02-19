@@ -17,6 +17,7 @@ mod data;
 mod route_handler;
 
 use std::net::SocketAddr;
+use std::sync::Arc;
 
 use data::data::AppState;
 use database::db;
@@ -40,12 +41,10 @@ async fn main() -> anyhow::Result<()> {
     let database = db::init_database_connection(&database_url).await?;
     tracing::info!("Connected to database on Pi");
 
-    let app_state = AppState {
-        some_val: 0
-    };
+    let app_state = Arc::new(AppState {pool: database});
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
-    let rest_api_router = create_router(&app_state)?;
+    let rest_api_router = create_router(app_state)?;
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, rest_api_router).await?;
