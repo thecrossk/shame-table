@@ -30,29 +30,11 @@ async fn main() -> anyhow::Result<()> {
 
     let app_state = Arc::new(AppState {pool: database});
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let _addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     let rest_api_router = create_router(app_state)?;
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, rest_api_router).await?;
-    /*
-        
 
-    
-    println!("Server running at http://{}", addr);
-
-
-    
-
-
-    let res = sqlx::query("SELECT * FROM shame_table").fetch_all(&pool).await?;
-    println!("Rows fetches: {}", res.len());
-
-    for row in res {
-        println!("row {:?}",row);
-    }
-
-    
-    */
     Ok(())
 }
