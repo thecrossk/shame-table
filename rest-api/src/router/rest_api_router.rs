@@ -11,7 +11,7 @@ use crate::route_handler::start_page::get_start_page;
 pub fn create_router(state: Arc<AppState>) -> anyhow::Result<Router> {
     let router = Router::new()
 
-        .nest_service("/images", ServeDir::new("src/assets/images/cocktailbar"))
+        .nest_service("/images", ServeDir::new("rest-api/src/assets/images/cocktailbar"))
 
         .route("/", get(get_start_page))
         .route("/add-entry", post(add_entry))

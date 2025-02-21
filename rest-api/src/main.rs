@@ -11,8 +11,6 @@ use database::db;
 
 
 use router::rest_api_router::create_router;
-use tracing::{debug, error, info};
-use tracing_subscriber::fmt;
 use tracing_subscriber::EnvFilter;
 use dotenv::dotenv;
 
