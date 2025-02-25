@@ -1,5 +1,7 @@
 mod database;
 
+use std::env;
+
 use database::db;
 use dotenv::dotenv;
 use tracing_subscriber::EnvFilter;
@@ -10,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
 
     tracing_subscriber::fmt().with_env_filter(EnvFilter::from_default_env()).init();
 
-    let database_url = "postgres://crosskdb:ming@192.168.178.56:5432/crossk-db";
+    let database_url = env::var("DATABASE_URL").expect("Variable 'DATABASE_URL' is not set");
     let database = db::init_database_connection(&database_url).await?;
     tracing::info!("Connected to database on Pi, start running migrations...");
 
