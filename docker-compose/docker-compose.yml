@@ -1,0 +1,15 @@
+version: '3.8'  # Specify the Docker Compose version
+services:
+  cocktailbar-db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: cocktailbar
+      POSTGRES_USER: crosskdb
+      POSTGRES_PASSWORD: ming
+    volumes:
+      - cocktailbar_data:/var/lib/postgresql/data  # Use a named volume for persistence
+volumes:
+  cocktailbar_data:  # Define the named volume
