@@ -7,6 +7,7 @@ use crate::data::data::{AppState, JsonDataFromWebUi, ShameTableData};
 
 pub async fn get_entries(
     State(state): State<Arc<AppState>>) -> Json<Vec<ShameTableData>> {
+    /*
     let rows = sqlx::query_as!(
         ShameTableData,
         r#"SELECT * FROM shame_table"#
@@ -15,4 +16,6 @@ pub async fn get_entries(
     .unwrap_or_else(|_| vec![]);
 
     Json(rows)
+    */
+    Json(vec![])
 }

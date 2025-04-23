@@ -1,4 +1,4 @@
-version: '3.8'  # Specify the Docker Compose version
+
 services:
   cocktailbar-db:
     image: postgres:latest
@@ -11,5 +11,37 @@ services:
       POSTGRES_PASSWORD: ming
     volumes:
       - cocktailbar_data:/var/lib/postgresql/data  # Use a named volume for persistence
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crosskdb"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+
+  cocktailbar-init:
+    build:
+      context: ..
+      dockerfile: init-cocktail-db/Dockerfile
+    environment:
+      DATABASE_URL: postgres://crosskdb:ming@db:5432/cocktailbar
+    depends_on:
+      cocktailbar-db:
+        condition: service_healthy
+
+  cocktailbar-api:
+    build:
+      context: ..
+      dockerfile: rest-api/Dockerfile
+    environment:
+      DATABASE_URL: postgres://crosskdb:ming@cocktailbar-db:5432/cocktailbar
+    depends_on:
+      cocktailbar-init:
+        condition: service_completed_successfully  # Wait for init to finish
+      cocktailbar-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"  # Adjust based on your API’s port
+    volumes:
+      - ../rest-api:/usr/src/app  # Optional, for development
+
 volumes:
   cocktailbar_data:  # Define the named volume
